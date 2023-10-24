@@ -30,8 +30,8 @@ int TRY (int k){
 }
 
 int main(){
-    printf("Nhap vao to hop can tinh:\n");
-    n = 4;
+    printf("Nhap vao so N cua ban co NxN:\n");
+    scanf("%d", &n);
     TRY(1);
     return 0;
 }
