@@ -18,8 +18,7 @@ void print(int arr[N][N])
 // Checks whether it will be legal 
 // to assign num to the
 // given row, col
-int isSafe(int grid[N][N], int row, 
-					int col, int num)
+int isSafe(int grid[N][N], int row, int col, int num)
 {
 	
 	// Check if we find the same num 
@@ -36,13 +35,11 @@ int isSafe(int grid[N][N], int row,
 
 	// Check if we find the same num in the 
 	// particular 3*3 matrix, we return 0
-	int startRow = row - row % 3, 
-				startCol = col - col % 3;
+	int startRow = row - row % 3, startCol = col - col % 3;
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
-			if (grid[i + startRow][j + 
-						startCol] == num)
+			if (grid[i + startRow][j + startCol] == num)
 				return 0;
 
 	return 1;
@@ -75,7 +72,7 @@ int solveSudoku(int grid[N][N], int row, int col)
 
 	// Check if the current position 
 	// of the grid already contains
-	// value >0, we iterate for next column
+	// value > 0, we iterate for next column
 	if (grid[row][col] > 0)
 		return solveSudoku(grid, row, col + 1);
 
@@ -114,15 +111,17 @@ int solveSudoku(int grid[N][N], int row, int col)
 int main()
 {
 	// 0 means unassigned cells
-	int grid[N][N] = { { 3, 0, 6, 5, 0, 8, 4, 0, 0 },
-					{ 5, 2, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 8, 7, 0, 0, 0, 0, 3, 1 },
-					{ 0, 0, 3, 0, 1, 0, 0, 8, 0 },
-					{ 9, 0, 0, 8, 6, 3, 0, 0, 5 },
-					{ 0, 5, 0, 0, 9, 0, 6, 0, 0 },
-					{ 1, 3, 0, 0, 0, 0, 2, 5, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 7, 4 },
-					{ 0, 0, 5, 2, 0, 6, 3, 0, 0 } };
+	int grid[N][N] = { 
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 7, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 } 
+					};
 
 	if (solveSudoku(grid, 0, 0)==1)
 		print(grid);
