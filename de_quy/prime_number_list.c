@@ -2,20 +2,24 @@
 #include <stdlib.h>
 #include <math.h>
 
-void is_prime(int n){
-    for(int i = 2; i <= sqrt(n); i++)
-        if (n % i == 0)
-        {
-            printf("%d is not a prime number\n", n);
-            return;
+void is_prime(int i, int n){
+    if ( i > n) return;
+        int count = 0;
+        for (int j = 2; j <= sqrt(i); j++){
+            if (i % j == 0){
+                count++;
+                break;
+            }
+        if (count == 0) printf("%d ", i);
         }
-    printf("%d", n);
+        is_prime(i+1, n);
+    
 }
 
 int main(){
     int n;
     scanf("%d", &n);
-    is_prime(n);
+    is_prime(2,n);
     return 0;
 }
 
