@@ -2,69 +2,111 @@
 #include <stdlib.h>
 #include <time.h>
 
+// N is the size of the 2D matrix N*N
 #define N 9
 
-//ham in ra ket qua
-void print(int arr[N][N]){
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < N; j++){
-            printf("%d ", arr[i][j]);
-        }
-        printf("\n");
-    }
+/* A utility function to print grid */
+void print(int arr[N][N])
+{
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+			printf("%d ",arr[i][j]);
+		printf("\n");
+	}
 }
 
-//ham kiem tra sudoku co dung hay khong
-int is_safe(int arr[N][N], int hang, int cot, int num){
-    
-    //kiem tra xem co trung so tren cung 1 hang hay khong
-    for (int i = 0; i < hang; i++)
-        if (arr[hang][i] == num) return 0;
+// Checks whether it will be legal 
+// to assign num to the
+// given row, col
+int isSafe(int grid[N][N], int row, int col, int num)
+{
+	
+	// Check if we find the same num 
+	// in the similar row , we return 0
+	for (int x = 0; x <= 8; x++)
+		if (grid[row][x] == num)
+			return 0;
 
-    //kiem tra xem co trung so tren cung 1 cot hay khong
-    for (int i = 0; i < cot; i++)
-        if(arr[i][cot] == num) return 0;
+	// Check if we find the same num in the 
+	// similar column , we return 0
+	for (int x = 0; x <= 8; x++)
+		if (grid[x][col] == num)
+			return 0;
 
-    //kiem tra ma tran 3x3 xem co trung so trong ma tran do hay khong
-    int hang_bat_dat = hang - hang % 3;
-    int cot_bat_dau = cot - cot % 3;
+	// Check if we find the same num in the 
+	// particular 3*3 matrix, we return 0
+	int startRow = row - row % 3, startCol = col - col % 3;
 
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            if(arr[hang_bat_dat + i][cot_bat_dau + j] == num) return 0;
-        }
-    }
-    
-    return 1;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			if (grid[i + startRow][j + startCol] == num)
+				return 0;
+
+	return 1;
 }
 
+/* Takes a partially filled-in grid and attempts
+to assign values to all unassigned locations in
+such a way to meet the requirements for
+Sudoku solution (non-duplication across rows,
+columns, and boxes) */
+int solveSudoku(int grid[N][N], int row, int col)
+{
+	
+	// Check if we have reached the 8th row 
+	// and 9th column (0
+	// indexed matrix) , we are 
+	// returning true to avoid
+	// further backtracking
+	if (row == N - 1 && col == N)
+		return 1;
 
+	// Check if column value becomes 9 ,
+	// we move to next row and
+	// column start from 0
+	if (col == N) 
+	{
+		row++;
+		col = 0;
+	}
 
-//ham quay lui de kiem tra sudoku
-int solve_sudoku(int arr[N][N], int hang, int cot){
-    //kiem tra xem da den cuoi cua sudoku chua de ket thuc quay lui
-    if(hang == N - 1 && cot == N) return 1;
+	// Check if the current position 
+	// of the grid already contains
+	// value > 0, we iterate for next column
+	if (grid[row][col] > 0)
+		return solveSudoku(grid, row, col + 1);
 
-    //xuong dong khi den cuoi dong
-    if(cot == N){
-        hang++;
-        cot = 0;
-    }
-
-    //kiem tra xem vi tri hien tai da co gia tri > 0 chua
-    if(arr[hang][cot] > 0) return solve_sudoku(arr, hang, cot + 1);
-
-    //thu gan vao cac so tu 1 - 9 vao cac o cua sudoku
-    for(int num = 1; num <= N; num++){
-        if(is_safe(arr, hang, cot, num) == 1){
-            arr[hang][cot] = num;
-            if (solve_sudoku(arr, hang, cot + 1) == 1){
-                return 1;
-            }
-        }
-        arr[hang][cot] = 0;
-    }
-    return 0;
+	for (int num = 1; num <= N; num++) 
+	{
+		
+		// Check if it is safe to place 
+		// the num (1-9) in the
+		// given row ,col ->we move to next column
+		if (isSafe(grid, row, col, num)==1) 
+		{
+			/* assigning the num in the 
+			current (row,col)
+			position of the grid
+			and assuming our assigned num 
+			in the position
+			is correct	 */
+			grid[row][col] = num;
+		
+			// Checking for next possibility with next
+			// column
+			if (solveSudoku(grid, row, col + 1)==1)
+				return 1;
+		}
+	
+		// Removing the assigned num ,
+		// since our assumption
+		// was wrong , and we go for next 
+		// assumption with
+		// diff num value
+		grid[row][col] = 0;
+	}
+	return 0;
 }
 
 int main()
@@ -72,21 +114,22 @@ int main()
     srand(time(0));
 	// 0 means unassigned cells
 	int grid[N][N] = { 
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 },
-					{ rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9, rand() % 9 } 
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, rand() % 9, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0 } 
 					};
 
     printf("De bai:\n");
     print(grid);
     printf("Dap an:\n");
-	if (solve_sudoku(grid, 0, 0)==1)
+
+	if (solveSudoku(grid, 0, 0)==1)
 		print(grid);
 	else
 		printf("No solution exists");
