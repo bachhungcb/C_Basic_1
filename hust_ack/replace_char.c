@@ -12,20 +12,20 @@ void replace_char(char *s, char from, char to ){
 int main(){
     char mystring[100];
     char from_char, to_char;
-    printf("Nhap vao mot xau: ");
+    //printf("Nhap vao mot xau: ");
     scanf("%s", mystring);
     getchar();
 
-    printf("Nhap vao ky tu can chuyen: ");
+    //printf("Nhap vao ky tu can chuyen: ");
     scanf("%c", &from_char);
     getchar();
 
-    printf("Nhap vao ky tu muon chuyen: ");
+    //printf("Nhap vao ky tu muon chuyen: ");
     scanf("%c", &to_char);
     getchar();
 
     replace_char(mystring, from_char,to_char);
 
-    printf("\nKet qua sau khi thay the: %s\n", mystring);
+    printf("%s", mystring);
     return 0;
 }
