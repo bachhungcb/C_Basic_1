@@ -4,7 +4,7 @@
 
 
 char* replace_string(char *s, char *from, char *to){
-    char *pos, temp[100];
+    char *pos, temp[1000];
     int from_len = strlen(from);
     int index;
 
@@ -26,18 +26,16 @@ char* replace_string(char *s, char *from, char *to){
 }
 
 int main(){
-    char mystring[100];
-    char from_string[100];
-    char to_string[100];
-
-    scanf("%s", mystring);
-    getchar();
+    char mystring[1000];
+    char from_string[1000];
+    char to_string[1000];
 
     scanf("%s", from_string);
     getchar();
+    
+    fgets(to_string, 1000, stdin);
 
-    scanf("%s", to_string);
-    getchar();
+    fgets(mystring, 1000, stdin);
 
     replace_string(mystring, from_string, to_string);
     printf("%s", mystring);
