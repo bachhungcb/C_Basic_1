@@ -10,7 +10,7 @@ void print_solution(){
     printf("\n");
 }
 
-int Try(int k){
+void Try(int k){
     for(int i = 0; i <= 1; i++){
         if(x[k-1] + i < 2){
             x[k] = i;

@@ -5,8 +5,8 @@
 
 char* replace_string(char *s, char *from, char *to){
     char *pos, temp[1000];
-    int from_len = strlen(from);
-    int index;
+    long long int from_len = strlen(from);
+    long long int index;
 
     while ((pos = strstr(s,from)) != NULL){
         strcpy(temp, s);
