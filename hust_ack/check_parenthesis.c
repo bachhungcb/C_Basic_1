@@ -51,6 +51,8 @@ int main(){
         if(myString[i] == '}' && head != NULL && head->val == '{'){
             head = pop(head);
         }
+
+        
     }
 
     printf("%d", isEmpty(head));
