@@ -22,17 +22,16 @@ int main(){
     }
 
     for(int i = 0; i < n; i++){
-        for(int j = 0; j < k; j++){
-            for(int a = 0; a < m; a++){
-                for(int b = 0; b < p; b++){
-                    ket_qua[i][m] = A[i][j] * B[a][b];
-                }
-            }
+        for(int j = 0; j < m; j++){
+            int sum = 0;
+            for(int a = 0; a < k; a++)
+                sum = sum + A[i][a] * B[a][j];
+            ket_qua[i][j] = sum;
         }
     }
 
     for(int i = 0; i < n; i++){
-        for(int j = 0; i < m; j++){
+        for(int j = 0; j < m; j++){
             printf("%d ", ket_qua[i][j]);
         }
         printf("\n");
