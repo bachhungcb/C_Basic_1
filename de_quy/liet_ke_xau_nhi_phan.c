@@ -5,7 +5,7 @@ int n, x[100];
 
 void print_solution(){
     for(int k = 1; k <= n; k++){
-        printf("%d ",x[k]);
+        printf("%d",x[k]);
     }
     printf("\n");
 }
