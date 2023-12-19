@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 void selectionSort(int A[], int n){
-    for(int i = 0;i <= n;i++){
+    for(int i = 0;i < n-1;i++){
         int min = i;
-        for(int j = i+1;j <= n;j++){
+        for(int j = i+1;j < n;j++){
             if(A[min] >A[j]) min = j;
         }
         int temp = A[min];
@@ -14,11 +14,16 @@ void selectionSort(int A[], int n){
 }
 
 int main(){
-    int A[5]={5,4,2,1,6};
-    int n=sizeof(A)/sizeof(A[0]);
+    int n;
+    scanf("%d",&n);
+    int A[100];
+    for (int i = 0; i < n; i++){
+        scanf("%d", &A[i]);
+    }
+    
     selectionSort(A, n);
-    for(int i =0; i<n;i++){
-        printf("%d ",A[i]);
+    for(int i = 0; i<n;i++){
+        printf("%d ", A[i]);
     }
     return 0;
 }
