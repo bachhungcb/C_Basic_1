@@ -41,18 +41,12 @@ int POP(){
     if(queueEmpty()) return 0;
     
     Node *p = head;
-
-    if(head = tail){
-        result = head->data;
-        head = NULL;
-        tail = NULL;
-        return result;
-    }
-
-    head = p->next; 
+    head = p->next;
+    if(head == NULL) tail = NULL;
     result = p->data;
     free(p);
-    return result;
+    return result; 
+    
 }
 
 void print_queue(){
