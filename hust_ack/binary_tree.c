@@ -82,16 +82,12 @@ void freeTree(Node* r){
     r = NULL;
 }
 
-void preOrder(Node* r){
+void preOrder(Node* r) {
     if(r == NULL) return;
-    printf("%d->", r->data);
-    Node* p = r->leftMostChild;
-
-    while(p!=NULL){
-        preOrder(p);
-        p=p->rightSibling;
-    }
-}
+    printf("%d ",r->data);
+    preOrder(r->leftMostChild);
+    preOrder(r->rightSibling);
+ }
 
 void inOrder(Node* r) {
     if(r == NULL) return;
@@ -104,15 +100,19 @@ void postOrder(Node *r){
     if(r == NULL)return;
     postOrder(r->leftMostChild);
     postOrder(r->rightSibling);
-    printf("%d->",r->data);
+    printf("%d ",r->data);
 }
 
 
 int main(){
     char choice[256];
-
+    root = NULL;
     while(1){
         scanf("%s", choice);
+
+        if(strcmp(choice, "*") == 0){
+            break;
+        }
 
         if(strcmp(choice, "MakeRoot") == 0){
             root = makeNode(1);
@@ -121,36 +121,40 @@ int main(){
         if(strcmp(choice, "AddLeft") == 0){
             int left, parent;
             scanf("%d %d", &left, &parent);
-            if(find(root, left) != NULL){
-                addLeft(parent, left);
+            Node* parentNode = find(root, parent);
+            Node* childNode = find(root, left);
+
+            if(parentNode != NULL && childNode == NULL){
+                addLeft(parentNode->data, left);
             }
         }
 
         if(strcmp(choice, "AddRight") == 0){
             int right, parent;
             scanf("%d %d", &right, &parent);
-            if(find(root, right) != NULL){
-                addRight(parent, right);
+            Node* parentNode = find(root, parent);
+            Node* siblingNode = find(root, right);
+
+            if(parentNode != NULL && siblingNode == NULL){
+                addRight(parentNode->data, right);
             }
         }
-
+        
         if(strcmp(choice, "PreOrder") == 0){
             preOrder(root);
+            printf("\n");
         }
 
         if(strcmp(choice, "InOrder") == 0){
             inOrder(root);
+            printf("\n");
         }
 
         if(strcmp(choice, "PostOrder") == 0){
             postOrder(root);
-        }
-
-        if(strcmp(choice, "*") == 0){
-            break;
+            printf("\n");
         }
     }
-
-    freeTree(root);
+    
     return 0;
 }
