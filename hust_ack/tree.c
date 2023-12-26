@@ -36,18 +36,10 @@ Node* addLast(Node* p, int v){
     return p;
 }
 
-Node* addLeft(int parent, int left){
+void addChild(int parent, int child){
     Node* r = find(root, parent);
-    if(r == NULL || r->leftMostChild != NULL) return NULL;
-    r->leftMostChild = addLast(r->leftMostChild, left);
-    return r;
-}
-
-Node* addRight(int parent, int right){
-    Node* r = find(root, parent);
-    if(r == NULL || r->rightSibling != NULL) return NULL;
-    r->rightSibling = addLast(r->rightSibling, right);
-    return r;
+    if(r == NULL) return;
+    r->leftMostChild = addLast(r->leftMostChild, child);
 }
 
 void printTree(Node* r){
@@ -78,29 +70,45 @@ void freeTree(Node* r){
         p = sp;
     }
 
-    //printf("Free Node %d\n", r->data); free(r);
     r = NULL;
 }
 
-void preOrder(Node* r) {
+void preOrder(Node *r){
     if(r == NULL) return;
-    printf("%d ",r->data);
-    preOrder(r->leftMostChild);
-    preOrder(r->rightSibling);
- }
+    printf("%d ", r->data);
+    Node *p = r->leftMostChild;
+
+    while(p != NULL){
+        preOrder(p);
+        p = p->rightSibling;
+    }
+}
 
 void inOrder(Node* r) {
     if(r == NULL) return;
-    inOrder(r->leftMostChild);
-    printf("%d ",r->data);
-    inOrder(r->rightSibling);
+    Node *p = r->leftMostChild;
+    inOrder(p);
+    printf("%d ", r->data);
+
+    if(p != NULL)
+        p = p->rightSibling;
+
+    while(p != NULL){
+        inOrder(p);
+        p = p->rightSibling;
+    }
 }
 
 void postOrder(Node *r){
     if(r == NULL)return;
-    postOrder(r->leftMostChild);
-    postOrder(r->rightSibling);
-    printf("%d ",r->data);
+    Node* p = r->leftMostChild;
+
+    while(p != NULL){
+        postOrder(p);
+        p = p->rightSibling;
+    }
+
+    printf("%d ", r->data);
 }
 
 
@@ -115,19 +123,15 @@ int main(){
         }
 
         if(strcmp(choice, "MakeRoot") == 0){
-            root = makeNode(1);
+            int value;
+            scanf("%d", &value);
+            root = makeNode(value);
         }
 
-        if(strcmp(choice, "AddLeft") == 0){
-            int left, parent;
-            scanf("%d %d", &left, &parent);
-            addLeft(parent, left);
-        }
-
-        if(strcmp(choice, "AddRight") == 0){
-            int right, parent;
-            scanf("%d %d", &right, &parent);
-            addRight(parent, right);
+        if(strcmp(choice, "Insert") == 0){
+            int child, parent;
+            scanf("%d %d", &child, &parent);
+            addChild(parent, child);
         }
 
         if(strcmp(choice, "PreOrder") == 0){

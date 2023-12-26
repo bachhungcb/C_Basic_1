@@ -2,60 +2,84 @@
 #include <stdlib.h>
 
 typedef struct Node{
-    char val;
+    char cha;
     struct Node* next;
 }Node;
 
+Node* top;
+
+void initStack(){
+    top = NULL;
+}
+
+int stackEmpty(){
+    return top == NULL;
+}
+
 Node* makeNode(char c){
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->val = c; newNode->next = NULL;
-    return newNode;
+    Node *p = (Node*)malloc(sizeof(Node));
+    p->cha = c;
+    p->next = NULL;
+    return p;
 }
 
-Node* push(Node* h, char c){ 
-    Node* newNode = makeNode(c);
-    newNode->next = h;
-    return newNode;
+void push(char x){
+    Node* p = makeNode(x);
+    p->next = top;
+    top = p;
 }
 
-Node* pop(Node* h){
-    if(h == NULL)
-        return NULL;
-    Node* nextNode = h->next;
-    free(h);
-    return nextNode;
+char pop(){
+    if(stackEmpty())
+        return ' ';
+    char x = top->cha;
+    Node* temp = top;
+    top = temp->next;
+    free(temp);
+    return x;
 }
 
-int isEmpty(Node* h){
-    return h == NULL;
+void printList(){
+    for(Node *p = top; p != NULL;p = p->next)
+        printf("%c", p->cha);
+}
+
+int kiem_tra(char a, char b){
+    if(a == '(' && b ==')') return 1;
+    if(a == '[' && b ==']') return 1;
+    if(a == '{' && b =='}') return 1;
+    return 0;
+}
+
+int check(char* s){
+    for(int i = 0; s[i] != 0; i++){
+
+        if(s[i] == '(' || s[i] == '[' || s[i] == '{' ){
+            push(s[i]);
+        }else{
+            if(stackEmpty()){
+                return 0;
+            }
+            char x = pop();
+            if(!kiem_tra(x,s[i])){
+                return 0;
+            }
+        }
+   }
+
+   return stackEmpty();
 }
 
 int main(){
-    char myString[1000];
-    scanf("%s", myString);
-    Node* head = NULL;
+    initStack();
+    char my_string[1000];
     
-    for(int i = 0; myString[i] != '\0'; i++){
-        if(myString[i] == '(' || myString[i] == '{' ||myString[i] == '[' ){
-            head = push(head, myString[i]);
-        }
+    scanf("%s", my_string);
 
-        if(myString[i] == ')' && head != NULL && head->val == '('){
-            head = pop(head);
-        }
+    printf("%d", check(my_string));
 
-        if(myString[i] == ']' && head != NULL && head->val == '['){
-            head = pop(head);
-        }
+    while(top!= NULL)
+        pop();
 
-        if(myString[i] == '}' && head != NULL && head->val == '{'){
-            head = pop(head);
-        }
-
-        
-    }
-
-    printf("%d", isEmpty(head));
-    free(head);
     return 0;
 }
