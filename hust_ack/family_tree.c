@@ -21,7 +21,7 @@ Node* find(Node* r, char* i_name){
     if(r == NULL)return NULL;
     if(strcmp(r->name, i_name) == 0) return r;
 
-    Node* lefResult = find(r->rightSibling, i_name);
+    Node* lefResult = find(r->leftMostChild, i_name);
 
     if(lefResult != NULL)
         return lefResult;
@@ -29,30 +29,39 @@ Node* find(Node* r, char* i_name){
     return find(r->rightSibling, i_name);
 }
 
-Node* addLast(Node* p, char* i_name){
-    if(p == NULL) return makeNode(i_name);
-    p->rightSibling = addLast(p->rightSibling, i_name);
+Node* addLast(Node* p, char* i_name) {
+    if (p == NULL) return makeNode(i_name);
+    Node* temp = p;
+    while (temp != NULL) {
+        if (strcmp(temp->name, i_name) == 0) return p; // Check for duplicate
+        if (temp->rightSibling == NULL) {
+            temp->rightSibling = makeNode(i_name);
+            return p;
+        }
+        temp = temp->rightSibling;
+    }
     return p;
 }
 
-void addChild(char* child, char* parent){
-    Node* r = find(root, parent);
-    if(r == NULL) return;
-    r->leftMostChild = addLast(r->leftMostChild, child);
+void addChild(Node* child, Node* parent){
+   if(parent == NULL) return;
+    parent->leftMostChild = addLast(parent->leftMostChild, child->name);
 }
 
-void freeTree(Node* r){
+ void freeTree(Node* r){
     if(r == NULL) return;
     Node* p = r->leftMostChild;
 
-    while(p!=NULL){
+    while(p != NULL){
         Node* sp = p->rightSibling;
         freeTree(p);
         p = sp;
     }
 
+    //printf("free node %s\n",r->name); free(r);
     r = NULL;
-}
+ }
+
 
 void processFind(){
     char name[256];     scanf("%s", name);
@@ -107,6 +116,22 @@ void printTree(Node* r){
     }
 }
 
+
+void inOrder(Node* r) {
+    if(r == NULL) return;
+    Node *p = r->leftMostChild;
+    inOrder(p);
+    printf("%s->", r->name);
+
+    if(p != NULL)
+        p = p->rightSibling;
+
+    while(p != NULL){
+        inOrder(p);
+        p = p->rightSibling;
+    }
+}
+
 int count (Node *r){
     if(r == NULL) return 0;
     int cnt = 1;
@@ -119,20 +144,53 @@ int count (Node *r){
     return cnt;
 }
 
-int main(){
-    root = makeNode("Newman");
-    addChild("Peter", "Newman");
-    addChild("Michael", "Thomas");
-    addChild("John", "David");
-    addChild("Paul", "Mark");
-    addChild("Stephan", "Mark");
-    addChild("Pierre", "Thomas");
-    addChild("Mark", "Newman");
-    addChild("Bill", "David");
-    addChild("David", "Newman");
-    addChild("Thomas", "Mark");
-    printTree(root);
-    printf("The number of children for %s is %d.\n", "Newman", count(root));
+int countDirectChildren(Node *r){
+    if(r == NULL) return 0;
+    int cnt = 0;
+    Node* q = r->leftMostChild;
+
+    while(q != NULL){
+        cnt++;
+        q = q->rightSibling;
+    }
+    return cnt;
+}
+
+
+int main() {
+    root = NULL;
+    char child[256];
+    char parent[256];
+    char choice[256];
+    char name[256];
+    while (strcmp(child, "***") != 0 || strcmp(parent, "***") != 0)  {
+        scanf("%s %s", child, parent);
+        printf("Child: %s\n", child);
+        printf("parent: %s\n", parent);
+        Node* childNode = makeNode(child);
+        Node* parentNode = find(root, parent);
+
+        if (parentNode == NULL) {
+            root = makeNode(parent);
+            parentNode = root;
+        }
+        addChild(childNode, parentNode);
+    }
+
+    while (strcmp(choice, "***") != 0 || strcmp(name, "***") != 0) {
+        scanf("%s %s", choice, name);
+        printf("name: %s\n", name);
+        Node* wanted = find(root, name);
+
+        if (strcmp(choice, "descendants") == 0) {
+            printf("%d\n", count(wanted));
+        }
+
+        if (strcmp(choice, "generation") == 0) {
+            printf("%d\n", height(wanted));
+        }
+    }
+
     freeTree(root);
     return 0;
 }
