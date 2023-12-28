@@ -30,22 +30,22 @@ Node* find(Node* r, char* i_name){
 }
 
 Node* addLast(Node* p, char* i_name) {
-    if (p == NULL) return makeNode(i_name);
+    if (p == NULL) return makeNode(i_name);  // If the list is empty, create a new node.
+    
     Node* temp = p;
-    while (temp != NULL) {
-        if (strcmp(temp->name, i_name) == 0) return p; // Check for duplicate
-        if (temp->rightSibling == NULL) {
-            temp->rightSibling = makeNode(i_name);
-            return p;
-        }
+    while (temp->rightSibling != NULL) {  // Traverse the list to the last node.
         temp = temp->rightSibling;
     }
+    
+    temp->rightSibling = makeNode(i_name);  // Add the new node at the end of the list.
     return p;
 }
 
-void addChild(Node* child, Node* parent){
-   if(parent == NULL) return;
-    parent->leftMostChild = addLast(parent->leftMostChild, child->name);
+
+void addChild(char* child, char* parent){
+   Node* r = find(root, parent);
+   if(r == NULL) return;
+    r->leftMostChild = addLast(r->leftMostChild, child);
 }
 
  void freeTree(Node* r){
@@ -163,34 +163,42 @@ int main() {
     char parent[256];
     char choice[256];
     char name[256];
-    while (strcmp(child, "***") != 0 || strcmp(parent, "***") != 0)  {
-        scanf("%s %s", child, parent);
-        printf("Child: %s\n", child);
-        printf("parent: %s\n", parent);
-        Node* childNode = makeNode(child);
-        Node* parentNode = find(root, parent);
 
-        if (parentNode == NULL) {
+    while (1){
+        scanf("%s", child);
+        if(strcmp(child, "***") == 0)
+            break;
+
+        scanf("%s", parent);
+        
+        if (root == NULL) {
             root = makeNode(parent);
-            parentNode = root;
         }
-        addChild(childNode, parentNode);
+        Node* f = find(root, parent);
+        printf("Child: %s\n", child);
+        printf("Parent: %s\n", parent);
+        printf("Find: %s\n\n", f->name);
+        addChild(child, parent);
     }
 
-    while (strcmp(choice, "***") != 0 || strcmp(name, "***") != 0) {
-        scanf("%s %s", choice, name);
-        printf("name: %s\n", name);
-        Node* wanted = find(root, name);
+    while (1){
+        scanf("%s", choice);
+        if(strcmp(choice, "***") == 0)
+            break;
 
+        scanf("%s", name);
+
+        Node* wanted = find(root, name);
         if (strcmp(choice, "descendants") == 0) {
-            printf("%d\n", count(wanted));
+            printf("%d\n", count(wanted) - 1);
         }
 
         if (strcmp(choice, "generation") == 0) {
-            printf("%d\n", height(wanted));
+            printf("%d\n", height(wanted) - 1);
         }
     }
-
+    
+    printTree(root);
     freeTree(root);
     return 0;
 }
