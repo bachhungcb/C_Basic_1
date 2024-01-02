@@ -24,7 +24,7 @@ int main() {
             water += a;
         else
             water = b;
-        
+
         if (water == c) break;
 
         steps++;
