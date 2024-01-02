@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 int cmp(const void *a, const void *b) {
-    return (*(int *)a - *(int *)b) > 0 ? 1 : -1;
+    return (*(int *)a - *(int *)b);
 }
 
 int main() {
@@ -15,9 +15,9 @@ int main() {
         scanf("%d", &arr[i]);
     }
 
-    qsort(arr, n, sizeof(double), &cmp);
+    qsort(arr, n, sizeof(int), cmp);
 
-    for (i = n-1; i >= 0; i--) {
+    for (i = 0; i < n; i++) {
         printf("%d ", arr[i]);
     }
 
