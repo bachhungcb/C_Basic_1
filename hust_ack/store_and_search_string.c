@@ -159,42 +159,38 @@ int countDirectChildren(Node *r){
 
 int main() {
     root = NULL;
-    char child[256];
-    char parent[256];
-    char choice[256];
-    char name[256];
+    char command[512];
+    char key[512];
 
     while (1){
-        scanf("%s", child);
-        if(strcmp(child, "***") == 0)
-            break;
+        scanf("%s", command);
 
-        scanf("%s", parent);
+        if(strcmp(command, "*") == 0)
+            break;
         
-        if (root == NULL) {
-            root = makeNode(parent);
+         if (root == NULL) {
+            root = makeNode(command);
         }
-        Node* f = find(root, parent);
-        printf("Child: %s\n", child);
-        printf("Parent: %s\n", parent);
-        printf("Find: %s\n\n", f->name);
-        addChild(child, parent);
-    }
+
+        addChild(root, command);
+        }
 
     while (1){
-        scanf("%s", choice);
-        if(strcmp(choice, "***") == 0)
+        scanf("%s", command);
+        if(strcmp(command, "*") == 0)
             break;
 
-        scanf("%s", name);
+        scanf("%s", key);
+        if(strcmp(command, "find") == 0){
+            Node* wanted = find(root, key);
 
-        Node* wanted = find(root, name);
-        if (strcmp(choice, "descendants") == 0) {
-            printf("%d\n", count(wanted) - 1);
+            if(wanted != NULL)
+                printf("1\n");
+            else
+                printf("0\n");
         }
-
-        if (strcmp(choice, "generation") == 0) {
-            printf("%d\n", height(wanted) - 1);
+        else if(strcmp(command, "insert") == 0){
+            
         }
     }
     
