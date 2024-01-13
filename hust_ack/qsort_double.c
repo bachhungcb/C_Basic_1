@@ -8,9 +8,10 @@ int cmp(const void *a, const void *b) {
 
 int main() {
     int n, i;
-    double arr[n];
-
+    double *arr;
+    
     scanf("%d", &n);
+    arr = (double*)malloc(n * sizeof(double));
     for (i = 0; i < n; i++) {
         scanf("%lf", &arr[i]);
     }
@@ -21,6 +22,7 @@ int main() {
         printf("%.2lf\n", arr[i]);
     }
 
+    free(arr);
     return 0;
 }
 
