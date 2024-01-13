@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 1000
+#define MAX 100
 
 typedef struct contest{
     char userID[10];
