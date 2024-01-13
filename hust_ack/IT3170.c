@@ -2,32 +2,59 @@
 #include <stdlib.h>
 #include <string.h>
 
-int MAX = 100;
+#define MAX 10000
 
-typedef struct contest{
-    char fromAccount[20];
-    char toAccount[20];
+typedef struct Node {
+    char account[20];
     int money;
-    char timePoint[9];
-    char ATM[3];
-}contest;
+    struct Node* next;
+} Node;
 
-int profileCount = 0;
+Node* hashTable[MAX];
+
+unsigned int hash(char* account) {
+    unsigned int value = 0;
+    for (int i = 0; i < strlen(account); i++) {
+        value = value * 31 + account[i];
+    }
+    return value % MAX;
+}
+
+void insert(char* account, int money) {
+    unsigned int index = hash(account);
+    Node* node = hashTable[index];
+    while (node != NULL) {
+        if (strcmp(node->account, account) == 0) {
+            node->money += money;
+            return;
+        }
+        node = node->next;
+    }
+    node = (Node*)malloc(sizeof(Node));
+    strcpy(node->account, account);
+    node->money = money;
+    node->next = hashTable[index];
+    hashTable[index] = node;
+}
+
+int getMoney(char* account) {
+    unsigned int index = hash(account);
+    Node* node = hashTable[index];
+    while (node != NULL) {
+        if (strcmp(node->account, account) == 0) {
+            return node->money;
+        }
+        node = node->next;
+    }
+    return 0;
+}
 
 int main(){
-    contest *log = (contest*)malloc(MAX * sizeof(contest));
+     char line[256];
+    char *saveptr = NULL;
+    char *token;
 
-    while(1){
-        char line[256];
-        char *saveptr = NULL;
-        char *token;
-        fgets(line,256,stdin);
-
-        if(profileCount >= MAX){
-            MAX *= 2;
-            log = realloc(log, MAX * sizeof(contest));
-        }
-
+    while(fgets(line,256,stdin)){
         if(line[strlen(line) - 1] == '\n') {
             line[strlen(line) - 1] = '\0';
         }
@@ -35,22 +62,19 @@ int main(){
         if(strcmp(line, "#") == 0){
             break;
         }
+        char fromAccount[20], toAccount[20];
+        int money;
+
         token = strtok_r(line, " ", &saveptr);
-        strcpy(log[profileCount].fromAccount, token);
+        strcpy(fromAccount, token);
 
         token = strtok_r(NULL, " ", &saveptr);
-        strcpy(log[profileCount].toAccount, token);
+        strcpy(toAccount, token);
 
         token = strtok_r(NULL, " ", &saveptr);
-        log[profileCount].money = atoi(token);
+        money = atoi(token);
 
-        token = strtok_r(NULL, " ", &saveptr);
-        strcpy(log[profileCount].timePoint, token);
-
-        token = strtok_r(NULL, " ", &saveptr);
-        strcpy(log[profileCount].ATM, token);
-
-        profileCount++;
+        insert(fromAccount, money);
     }
 
     while(1){
@@ -73,20 +97,13 @@ int main(){
 
         if(strcmp(cmd, "?total_money_transaction_from") == 0){
             char username[20];
-            int sum = 0;
 
             token = strtok_r(NULL, " ", &saveptr);
             strcpy(username, token);
 
-            for(int i = 0; i < profileCount; i++){
-                if(strcmp(log[i].fromAccount, username) == 0)
-                    sum += log[i].money;
-            }
-            printf("%d\n",sum);
+            printf("%d\n", getMoney(username));
         }
-
     }
     
-    free(log);
     return 0;
 }
