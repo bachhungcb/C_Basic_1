@@ -5,6 +5,7 @@
 // Structure for a node of the binary tree
 struct Node {
     int id;
+    int height;
     struct Node* left;
     struct Node* right;
 };
@@ -13,6 +14,7 @@ struct Node {
 struct Node* createNode(int id) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->id = id;
+    newNode->height = 1;
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
@@ -43,10 +45,27 @@ int computeHeight(struct Node* root) {
     if (root == NULL) {
         return 0;
     }
-    int leftHeight = computeHeight(root->left);
-    int rightHeight = computeHeight(root->right);
     
-    return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
+    int height = 0;
+    struct Node* stack[50000];
+    int top = -1;
+    stack[++top] = root;
+    
+    while (top >= 0) {
+        struct Node* node = stack[top--];
+        int leftHeight = (node->left != NULL) ? node->left->height : 0;
+        int rightHeight = (node->right != NULL) ? node->right->height : 0;
+        node->height = 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
+        height = (node->height > height) ? node->height : height;
+        if (node->right != NULL) {
+            stack[++top] = node->right;
+        }
+        if (node->left != NULL) {
+            stack[++top] = node->left;
+        }
+    }
+    
+    return height;
 }
 
 // Function to check if the tree is balanced
