@@ -9,7 +9,7 @@ def check_identical_large_files(file_path1, file_path2):
             print("The two files are identical.")
 
 # Test the function with your file paths
-file1 = r'D:\C Basic\testing file\correct.txt.txt'
-file2 = r'D:\C Basic\testing file\user.txt.txt'
+file1 = r'D:\C_Basic\testing file\correct.txt.txt'
+file2 = r'D:\C_Basic\testing file\user.txt.txt'
 
 check_identical_large_files(file1, file2)

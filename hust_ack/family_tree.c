@@ -44,7 +44,10 @@ Node* addLast(Node* p, char* i_name) {
 
 void addChild(char* child, char* parent){
    Node* r = find(root, parent);
-   if(r == NULL) return;
+   if(r == NULL){
+        r = makeNode(parent);
+        return;
+   }
     r->leftMostChild = addLast(r->leftMostChild, child);
 }
 
@@ -83,6 +86,14 @@ int processFindChild(){
     }
 
     return childCount;
+}
+
+void appendToTree(Node* node){
+    if(root == NULL){
+        root = node;
+    }else{
+        
+    }
 }
 
 int height(Node* p){

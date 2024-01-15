@@ -3,8 +3,9 @@
 #include <string.h>
 
 int main(){
-    char str1[256] = "10:35:20";
-    char str2[256] = "10:35:19";
-    printf("%d", strcmp(str2, str1));// -1 la be hon 1 la lon hon
+    printf("9 2 4 0\n");
+    printf("7 5 3 2\n");
+    printf("7 5 12 2 4 0\n");
+    printf("10\n");
     return 0;
 }

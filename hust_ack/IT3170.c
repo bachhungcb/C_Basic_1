@@ -5,8 +5,8 @@
 #define MAX 10000
 
 typedef struct Node {
-    char account[20];
-    int money;
+    char *account;
+    unsigned short int money;
     struct Node* next;
 } Node;
 
@@ -14,7 +14,8 @@ Node* hashTable[MAX];
 
 unsigned int hash(char* account) {
     unsigned int value = 0;
-    for (int i = 0; i < strlen(account); i++) {
+    int length = strlen(account);  // Store the length of the string
+    for (int i = 0; i < length; i++) {
         value = value * 31 + account[i];
     }
     return value % MAX;
@@ -31,7 +32,7 @@ void insert(char* account, int money) {
         node = node->next;
     }
     node = (Node*)malloc(sizeof(Node));
-    strcpy(node->account, account);
+    node->account = strdup(account);  // Allocate memory for the account name
     node->money = money;
     node->next = hashTable[index];
     hashTable[index] = node;
@@ -47,6 +48,18 @@ int getMoney(char* account) {
         node = node->next;
     }
     return 0;
+}
+
+void freeHashTable() {
+    for (int i = 0; i < MAX; i++) {
+        Node* node = hashTable[i];
+        while (node != NULL) {
+            Node* next = node->next;
+            free(node->account);  // Free the memory used by the account name
+            free(node);
+            node = next;
+        }
+    }
 }
 
 int main(){
@@ -77,7 +90,7 @@ int main(){
         insert(fromAccount, money);
     }
 
-    while(1){
+        while(1){
         char line[256];
         char *saveptr = NULL;
         char *token;
@@ -99,11 +112,13 @@ int main(){
             char username[20];
 
             token = strtok_r(NULL, " ", &saveptr);
-            strcpy(username, token);
+            if (token != NULL) {  // Check if the token is not NULL before copying it
+                strcpy(username, token);
+            }
 
-            printf("%d\n", getMoney(username));
+            printf("%hu\n", getMoney(username));
         }
     }
-    
+    freeHashTable();
     return 0;
 }

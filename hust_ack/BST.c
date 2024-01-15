@@ -118,7 +118,7 @@ int main(){
     while(1){
         scanf("%s", choice);
 
-        if(strcmp(choice, "*") == 0){
+        if(strcmp(choice, "#") == 0){
             break;
         }
 
@@ -150,6 +150,7 @@ int main(){
         }
     }
     preOrder(root);
+    printf("\n");
 
     freeTree(root);
     return 0;
