@@ -1,35 +1,30 @@
 #include <stdio.h>
 #include <math.h>
 
-void findDistinctSolutions(int a, int b, int c) {
-    int discriminant = b * b - 4 * a * c;
+#define EPSILON 0.000001
 
-    if (discriminant < 0) {
-        printf("NO SOLUTION\n");
-        return;
+int findRoots(int a, int b, int c, int d) {
+    int cnt = 0;
+    for (double i = -100; i <= 100; i += EPSILON) {
+        if (fabs(a*i*i*i + b*i*i + c*i + d) <= EPSILON) {
+            printf("%.1f ", i);
+            cnt++;
+        }
     }
-
-    if (a == 0) {
-        printf("NO SOLUTION\n");
-        return;
-    }
-
-    double root1 = (-b + sqrt(discriminant)) / (2 * a);
-    double root2 = (-b - sqrt(discriminant)) / (2 * a);
-
-    if (root1 == root2) {
-        printf("%.6f 2\n", root1);
-    } else {
-        printf("%.6f 1\n", fmin(root1, root2));
-        printf("%.6f 1\n", fmax(root1, root2));
-    }
+    if(cnt != 0)
+        return 1;
+    else
+        return 0;
 }
 
 int main() {
-    int a, b, c;
-    scanf("%d %d %d", &a, &b, &c);
+    int b, c, d;
+    scanf("%d %d %d", &b, &c, &d);
 
-    findDistinctSolutions(a, b, c);
-
+    if(findRoots(1, b, c, d) == 1){
+        findRoots(1, b, c, d);
+    }else{
+        printf("NO SOLUTION");
+    }
     return 0;
 }

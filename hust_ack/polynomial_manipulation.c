@@ -146,25 +146,37 @@ int main() {
         
         if (strcmp(command, "AddPoly") == 0) {
             scanf("%d %d %d", &polyId, &resultPolyId, &exp);
-            
-            if (polynomials[polyId] == NULL && polynomials[resultPolyId] == NULL) {
-                polynomials[resultPolyId] = createPolynomial(resultPolyId);
-            } else if (polynomials[polyId] != NULL && polynomials[resultPolyId] == NULL) {
-                polynomials[resultPolyId] = createPolynomial(resultPolyId);
-                struct Term* current = polynomials[polyId]->head;
-                
-                while (current != NULL) {
-                    addTerm(polynomials[resultPolyId], current->coefficient, current->exponent);
-                    current = current->next;
-                }
-            } else if (polynomials[polyId] != NULL && polynomials[resultPolyId] != NULL) {
-                struct Term* current = polynomials[polyId]->head;
-                
-                while (current != NULL) {
-                    addTerm(polynomials[resultPolyId], current->coefficient, current->exponent);
-                    current = current->next;
+            struct Polynomial* poly1 = polynomials[polyId];
+            struct Polynomial* poly2 = polynomials[exp];
+            struct Polynomial* resultPoly = createPolynomial(resultPolyId);
+
+            struct Term* term1 = poly1 ? poly1->head : NULL;
+            struct Term* term2 = poly2 ? poly2->head : NULL;
+
+            while (term1 || term2) {
+                if (term1 && term2) {
+                    if (term1->exponent == term2->exponent) {
+                        addTerm(resultPoly, term1->coefficient + term2->coefficient, term1->exponent);
+                        term1 = term1->next;
+                        term2 = term2->next;
+                    } else if (term1->exponent > term2->exponent) {
+                        addTerm(resultPoly, term1->coefficient, term1->exponent);
+                        term1 = term1->next;
+                    } else {
+                        addTerm(resultPoly, term2->coefficient, term2->exponent);
+                        term2 = term2->next;
+                    }
+                } else if (term1) {
+                    addTerm(resultPoly, term1->coefficient, term1->exponent);
+                    term1 = term1->next;
+                } else {
+                    addTerm(resultPoly, term2->coefficient, term2->exponent);
+                    term2 = term2->next;
                 }
             }
+
+            // Update the polynomials array with the new polynomial
+            polynomials[resultPolyId] = resultPoly;
         }
         
         if (strcmp(command, "PrintPoly") == 0) {

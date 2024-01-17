@@ -5,77 +5,49 @@
 // Structure for a node of the binary tree
 struct Node {
     int id;
-    int height;
     struct Node* left;
     struct Node* right;
 };
+
+// Array to store the nodes
+struct Node* nodes[50000];
 
 // Function to create a new node
 struct Node* createNode(int id) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->id = id;
-    newNode->height = 1;
     newNode->left = NULL;
     newNode->right = NULL;
+    nodes[id] = newNode; // Store the node in the array
     return newNode;
 }
 
-void addLeft(struct Node* root, int u, int v) {
-    if(root == NULL) return;
-    if(root->id == v){
-        root->left = createNode(u);
-        return;
+void addLeft(int u, int v) {
+    if(nodes[v] != NULL) {
+        nodes[v]->left = createNode(u);
     }
-    addLeft(root->left, u, v);
-    addLeft(root->right, u ,v);
 }
 
-void addRight(struct Node* root, int u, int v) {
-    if(root == NULL) return;
-    if(root->id == v){
-        root->right = createNode(u);
-        return;
+void addRight(int u, int v) {
+    if(nodes[v] != NULL) {
+        nodes[v]->right = createNode(u);
     }
-    addRight(root->right, u, v);
-    addRight(root->left, u ,v);
 }
 
-// Function to compute the height of the tree
-int computeHeight(struct Node* root) {
+// Function to compute the height of the tree and check if it is balanced
+int isBalanced(struct Node* root, int* height) {
     if (root == NULL) {
-        return 0;
-    }
-    
-    int height = 0;
-    struct Node* stack[50000];
-    int top = -1;
-    stack[++top] = root;
-    
-    while (top >= 0) {
-        struct Node* node = stack[top--];
-        int leftHeight = (node->left != NULL) ? node->left->height : 0;
-        int rightHeight = (node->right != NULL) ? node->right->height : 0;
-        node->height = 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
-        height = (node->height > height) ? node->height : height;
-        if (node->right != NULL) {
-            stack[++top] = node->right;
-        }
-        if (node->left != NULL) {
-            stack[++top] = node->left;
-        }
-    }
-    
-    return height;
-}
-
-// Function to check if the tree is balanced
-int isBalanced(struct Node* root) {
-    if (root == NULL) {
+        *height = 0;
         return 1;
     }
-    int leftHeight = computeHeight(root->left);
-    int rightHeight = computeHeight(root->right);
-    if (abs(leftHeight - rightHeight) <= 1 && isBalanced(root->left) && isBalanced(root->right)) {
+    
+    int leftHeight = 0, rightHeight = 0;
+    int isLeftBalanced = isBalanced(root->left, &leftHeight);
+    int isRightBalanced = isBalanced(root->right, &rightHeight);
+    
+    *height = (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+    
+    if (abs(leftHeight - rightHeight) <= 1 && isLeftBalanced && isRightBalanced) {
         return 1;
     }
     return 0;
@@ -93,18 +65,18 @@ int main() {
             root = createNode(u);
         } else if (strcmp(command, "AddLeft") == 0) {
             scanf("%d %d", &u, &v);
-            addLeft(root, u, v);
+            addLeft(u, v); // Corrected here
         } else if (strcmp(command, "AddRight") == 0) {
             scanf("%d %d", &u, &v);
-            addRight(root, u, v);
+            addRight(u, v); // Corrected here
         } else if (strcmp(command, "*") == 0) {
             break;
         }
     }
     
     // Compute height and check if the tree is balanced
-    int height = computeHeight(root);
-    int isTreeBalanced = isBalanced(root);
+    int height = 0;
+    int isTreeBalanced = isBalanced(root, &height);
     
     // Print the output
     printf("%d %d\n", isTreeBalanced, height);

@@ -2,113 +2,67 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX 100001
 
-typedef struct Node{
-    char value[256];
+typedef struct {
+    char key[51];
     struct Node* next;
-}Node;
+} Node;
 
-Node *head = NULL;
-Node *tail = NULL;
+Node* hashTable[MAX];
 
-Node* makenode(char *_value){
-    Node* p = (Node*)malloc(sizeof(Node));
-    strcpy(p->value,_value);
-    p->next = NULL;
-    return p;
+unsigned long hash(char* str) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c;
+    return hash % MAX;
 }
 
-int insertLast(char* _value){
-    Node* p = head;
+Node* createNode(char* key) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    strcpy(newNode->key, key);
+    newNode->next = NULL;
+    return newNode;
+}
 
-    while(p != NULL){
-        if(strcmp(p->value, _value) == 0){
+int insert(char* key) {
+    unsigned long index = hash(key);
+    Node* node = hashTable[index];
+    while (node != NULL) {
+        if (strcmp(node->key, key) == 0)
             return 0;
-        }
-        p=p->next;
+        node = node->next;
     }
-
-    Node *q = makenode(_value);
-    if(head == NULL){
-        head = tail = q;
-    }else{
-        tail->next = q;
-        tail = q;
-    }
+    node = createNode(key);
+    node->next = hashTable[index];
+    hashTable[index] = node;
     return 1;
 }
 
-int find(char *_value){
-    Node* p = head;
-    if(p == NULL) return 0;
-    while(p != NULL){
-        if(strcmp(p->value, _value) == 0){
+int find(char* key) {
+    unsigned long index = hash(key);
+    Node* node = hashTable[index];
+    while (node != NULL) {
+        if (strcmp(node->key, key) == 0)
             return 1;
-        }
-        p=p->next;
+        node = node->next;
     }
     return 0;
 }
 
-int insert(char *_value){
-    return insertLast(_value);
-}
-
-void freeList(){
-    Node *temp;
-    while(head != NULL){
-        temp = head;
-        head = temp->next;
-        free(temp);
+int main() {
+    char key[51];
+    while (scanf("%s", key) != EOF && key[0] != '*') {
+        insert(key);
     }
-}
-
-void printList(){
-    Node* p = head;
-    while(p != NULL){
-        printf("%s->", p->value);
-        p = p->next;
-    }
-}
-
-int main(){
-    char line[256];
-    int i = 0;
-    int cnt = 0;
-    while(1){
-        scanf("%s", line);
-
-        if(strcmp(line, "*") == 0)
-            break;
-
-        if(i == 0){
-            head = tail =  makenode(line);
-            i++;
-        }else{
-            insertLast(line);
+    char command[10];
+    while (scanf("%s%s", command, key) != EOF && command[0] != '*') {
+        if (strcmp(command, "find") == 0) {
+            printf("%d\n", find(key));
+        } else if (strcmp(command, "insert") == 0) {
+            printf("%d\n", insert(key));
         }
     }
-
-    while(1){
-        char parameter[50];
-        
-        scanf("%s %s", line, parameter);
-
-        if(strcmp(line, "***") == 0)
-            break;
-
-        if(strcmp(line, "find") == 0){
-            printf("%d\n", find(parameter));
-        }   
-
-        if(strcmp(line, "insert") == 0){
-            printf("%d\n", insert(parameter));
-        }
-
-        cnt++;
-    }
-
-
-    freeList();
     return 0;
 }

@@ -1,44 +1,37 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-int scmp(const void *a,const void *b){
-	const char** str1 = (const char**)a;
-    const char** str2 = (const char**)b;
-    return strcmp(*str1, *str2);
+#define MAX_WORDS 10000
+#define MAX_LENGTH 20
+
+int compare(const void *a, const void *b) {
+    return strcmp(*(char**)a, *(char**)b);
 }
 
-
 int main() {
-    char back[10];
-    char input[100000];
-    scanf("%s", back);
-    getchar();
-    char **words;
-    int cnt = 0;
-    int m=1000;
-	words = (char**)malloc(m*sizeof(char *));
-    while (fgets(input, sizeof(input), stdin) != NULL) {
-    	
-        char *token = strtok(input, " \n");
-        while (token != NULL && cnt < 100001) {
-            if (strstr(token, back) && strlen(token) > 0) {
-                words[cnt] =(char *)malloc(strlen(token) + 1);
-                strcpy(words[cnt], token);
-                cnt++;
-                if (cnt >= m) {
-                	m*=2;
-					words = (char **)realloc(words,m*sizeof(char *));}
-            }
-            token = strtok(NULL, " \n");
+    char suffix[MAX_LENGTH + 1];
+    scanf("%s", suffix);
+    getchar(); // consume '\n'
+
+    char *words[MAX_WORDS];
+    int count = 0;
+
+    char word[MAX_LENGTH + 1];
+    while (scanf("%s", word) != EOF) {
+        if (strlen(word) >= strlen(suffix) && strcmp(word + strlen(word) - strlen(suffix), suffix) == 0) {
+            words[count] = malloc(strlen(word) + 1);
+            strcpy(words[count], word);
+            count++;
         }
     }
-    qsort(words, cnt, sizeof(char *), scmp);
-    for (int i = 0; i < cnt; i++) {
+
+    qsort(words, count, sizeof(char*), compare);
+
+    for (int i = 0; i < count; i++) {
         printf("%s\n", words[i]);
         free(words[i]);
     }
-    free(words);
 
     return 0;
 }

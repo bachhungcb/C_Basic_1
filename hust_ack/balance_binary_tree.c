@@ -79,12 +79,27 @@ void freeTree(Node* r){
     
     free(r);
 }
+
 void preOrder(Node *r){
     if(r == NULL) return;
     printf("%d ", r->data);
     preOrder(r->left);
     preOrder(r->right);
 
+}
+
+void inOrder(Node *r){
+    if(r == NULL)return;
+    inOrder(r->left);
+    printf("%d ", r->data);
+    inOrder(r->right);
+}
+
+void postOrder(Node *r){
+    if(r == NULL) return;
+    postOrder(r->left);
+    postOrder(r->right);
+    printf("%d ",r->data);
 }
 
 int main(){

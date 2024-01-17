@@ -2,32 +2,48 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_LINES 10000
-#define MAX_LENGTH 101
+#define MAX_LENGTH 120
 
-// Hàm so sánh tùy chỉnh cho qsort
+// Custom comparison function for qsort
 int compare(const void *a, const void *b) {
-    return strcmp((char *)a, (char *)b);
+    return strcmp(*(char **)a, *(char **)b);
 }
 
 int main() {
     int n, i;
-    char lines[MAX_LINES][MAX_LENGTH];
+    char **lines;
 
     scanf("%d", &n);
-    getchar();  // Loại bỏ ký tự xuống dòng
+    getchar();  // Remove newline character
 
-    for(i = 0; i < n; i++) {
-        fgets(lines[i], MAX_LENGTH, stdin);
-        lines[i][strcspn(lines[i], "\n")] = 0;  // Loại bỏ ký tự xuống dòng
+    // Allocate memory for 'n' pointers to char
+    lines = malloc(n * sizeof(char *));
+    if(lines == NULL) {
+        printf("Memory allocation failed\n");
+        return 1;
     }
 
-    // Sắp xếp các dòng theo thứ tự bảng mã ASCII
-    qsort(lines, n, MAX_LENGTH, compare);
+    for(i = 0; i < n; i++) {
+        // Allocate memory for each line
+        lines[i] = malloc(MAX_LENGTH * sizeof(char));
+        if(lines[i] == NULL) {
+            printf("Memory allocation failed\n");
+            return 1;
+        }
+
+        fgets(lines[i], MAX_LENGTH, stdin);
+        lines[i][strcspn(lines[i], "\n")] = 0;  // Remove newline character
+    }
+
+    // Sort the lines in ASCII order
+    qsort(lines, n, sizeof(char *), compare);
 
     for(i = 0; i < n; i++) {
         printf("%s\n", lines[i]);
+        free(lines[i]);  // Free each line
     }
+
+    free(lines);  // Free the array of pointers
 
     return 0;
 }
