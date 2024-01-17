@@ -134,22 +134,21 @@ int main(){
             addChild(parent, child);
         }
 
-        if(strcmp(choice, "PreOrder") == 0){
+        if(strcmp(choice, "preorder") == 0){
             preOrder(root);
             printf("\n");
         }
 
-        if(strcmp(choice, "InOrder") == 0){
+        if(strcmp(choice, "inorder") == 0){
             inOrder(root);
             printf("\n");
         }
 
-        if(strcmp(choice, "PostOrder") == 0){
+        if(strcmp(choice, "postorder") == 0){
             postOrder(root);
             printf("\n");
         }
     }
-    preOrder(root);
     printf("\n");
 
     freeTree(root);

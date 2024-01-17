@@ -66,8 +66,8 @@ Node* find (Node* r, char* _name){
     if(r == NULL) return NULL;
     int c = strcmp(_name, r->name);
     if(c == 0) return r;
-    if(c < 0) return find(r->rightChild, _name);
-    return find(r->leftChild, _name);
+    if(c > 0) return find(r->rightChild, _name); // Search right child when comparison result is greater than 0
+    return find(r->leftChild, _name); // Search left child when comparison result is less than 0
 }
 
 Node* findMin(Node* r){
@@ -95,7 +95,7 @@ Node* removeStudent(Node* r, char* _name){
 
         else{
             Node* tmp = r;
-            if(r->leftChild = NULL) r = r->rightChild; else r = r->leftChild;
+            if(r->leftChild == NULL) r = r->rightChild; else r = r->leftChild;
             free(tmp);
         }
     }
@@ -111,11 +111,17 @@ void freeTree(Node* r){
 
 void load(char* filename){
     FILE* f = fopen(filename, "r");
-    if(f == NULL) printf("Lay du lieu tu file khong thanh cong, do khong tim thay file\n");
+    if(f == NULL) {
+        printf("Failed to open file: %s\n", filename);
+        return;
+    }
     for(int i = 0; i < M; i++) root[i] = NULL;
     while(!feof(f)){
         char _name[256], _email[256];
-        fscanf(f, "%s %s", _name, _email);
+        if(fscanf(f, "%s %s", _name, _email) != 2) {
+            printf("Failed to read data from file: %s\n", filename);
+            break;
+        }
         int idx= hash(_name);
         root[idx] = insert(root[idx], _name, _email);
     }
@@ -182,16 +188,19 @@ void processFind() {
     if (student != NULL) {
         printf("Name: %s, Email: %s\n", student->name, student->email); // print the student's record
     } else {
-        printf("No student with the name %s found.\n", name); // print a message if the student's record is not found
+        printf("Not found"); // print a message if the student's record is not found
     }
 }
 
 void main(){
     while(1){
-        printf("Enter command: ");
+        //printf("Enter command: ");
         char cmd[256];
         scanf("%s", cmd);
-        if(strcmp(cmd, "Quit") == 0) break;
+        if(strcmp(cmd, "Quit") == 0){
+            printf("\nBye");
+            break;
+        } 
         else if(strcmp(cmd, "Load") == 0) processLoad();
         else if(strcmp(cmd ,"Printf") == 0) printList();
         else if(strcmp(cmd ,"Find") == 0) processFind();

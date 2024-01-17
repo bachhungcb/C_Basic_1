@@ -80,27 +80,27 @@ void freeTree(Node* r){
     free(r);
 }
 
-void preOrder(Node *r){
+void preOrder(Node* r) {
     if(r == NULL) return;
-    printf("%d ", r->data);
+    printf("%d ",r->data);
     preOrder(r->left);
     preOrder(r->right);
+ }
 
-}
-
-void inOrder(Node *r){
-    if(r == NULL)return;
+void inOrder(Node* r) {
+    if(r == NULL) return;
     inOrder(r->left);
-    printf("%d ", r->data);
+    printf("%d ",r->data);
     inOrder(r->right);
 }
 
 void postOrder(Node *r){
-    if(r == NULL) return;
+    if(r == NULL)return;
     postOrder(r->left);
     postOrder(r->right);
     printf("%d ",r->data);
 }
+
 
 int main(){
     char choice[256];
@@ -128,9 +128,23 @@ int main(){
             root = insert(root, value);
 
         }
+
+         if(strcmp(choice, "preorder") == 0){
+            preOrder(root);
+            printf("\n");
+        }
+
+        if(strcmp(choice, "inorder") == 0){
+            inOrder(root);
+            printf("\n");
+        }
+
+        if(strcmp(choice, "postorder") == 0){
+            postOrder(root);
+            printf("\n");
+        }
     }
 
-    preOrder(root);
     freeTree(root);
     return 0;
 
