@@ -8,12 +8,12 @@ void swap(int *a, int *b){
 }
 
 void heapify(int A[], int i, int N){
-    int L = 2*i;
-    int R = 2*i+1;
+    int L = 2*i+1;
+    int R = 2*i+2;
     int max = i;
-    if(L <= N && A[L] > A[i])
+    if(L < N && A[L] > A[i])
         max = L;
-    if(R <= N && A[R] > A[max])
+    if(R < N && A[R] > A[max])
         max = R;
     if(max != i){
         swap(&A[i], &A[max]);
@@ -22,24 +22,23 @@ void heapify(int A[], int i, int N){
 }
 
 void buildHeap(int A[], int N){
-    for(int i = N/2; i>=1; i--){
+    for(int i = N/2-1; i>=0; i--){
         heapify(A, i, N);
     }
 }
 
 void heapSort(int A[], int N){
-    //index chay tu 1 -> N
     buildHeap(A, N);
-    for(int i = N; i > 1; i--){
-        swap(&A[1], &A[i]);
-        heapify(A, 1, i-1);
+    for(int i = N-1; i > 0; i--){
+        swap(&A[0], &A[i]);
+        heapify(A, 0, i);
     }
 }
 
 int main(){
-    int A[5]={12,0,9,5,7};
-    heapSort(A, 5);
-    for(int i = 0; i < 5; i++){
+    int A[31]={341,544,542,550,775,574,201,903,427,364,178,653,327,28,644,580,513,97,998,396,505,826,115,363,485,224,381,262,901,36,642};
+    heapSort(A, 31);
+    for(int i = 0; i < 31; i++){
         printf("%d->", A[i]);
     }
     return 0;
