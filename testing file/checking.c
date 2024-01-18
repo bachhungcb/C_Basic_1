@@ -37,11 +37,12 @@ Node* finalNode;
 void finalize(){
     for(int i = 0; i < szList; i++){
         free(listNode[i]);
+        listNode[i] = NULL;
     }
 }
 void addList(Node* node){// them phan tu vao listNode de thuc hien giai phong bo nho
-listNode[szList] = node;
-szList++;
+    listNode[szList] = node;
+    szList++;
 }
 //-----------------------------------
 
@@ -118,7 +119,7 @@ int main()
         while(IsEmpty() == 0)
             {
                 Node* tmp = Topqueue();
-                if(tmp->row < 1 || tmp->row > n || tmp->col < 1 || tmp->col > m)
+                if(tmp->row == 1 || tmp->row == n || tmp->col == 1 || tmp->col == m)
                 {
                     finalNode = tmp;
                     break;
