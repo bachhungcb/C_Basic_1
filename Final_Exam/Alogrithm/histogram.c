@@ -14,24 +14,24 @@ int main(){
         scanf("%d", &histogram[i]);
     }
 
-     for(int i = 0; i < n; i++){
+     for(int i = 1; i <=n; i++){
         
         if(abs(histogram[i-1] - histogram[i]) <=1){
             cnt++;
-
+            
             if(cnt > maxCnt){
                 maxCnt = cnt;
             }
             
-            if(histogram[i] < minLength)
-                minLength = histogram[i];
+            if(histogram[i-1] < minLength)
+                minLength = histogram[i-1];
 
         }else{
             cnt = 0;
         }
     }
 
-    printf("%d\n", (maxCnt + 1) * minLength);
+    printf("\n%d\n", (maxCnt + 1) * minLength);
     //printf("%d\n", maxCnt);
     //printf("%d\n", minLength);
 
