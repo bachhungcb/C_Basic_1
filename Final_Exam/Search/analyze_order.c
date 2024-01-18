@@ -5,7 +5,7 @@
 #define MAX_TIMEPOINT_LEN 9
 #define MAX_ACCOUNT_LEN 16
 #define HASH_SIZE 100000
-
+int order = 0;
 typedef struct Node {
     char account[MAX_ACCOUNT_LEN];
     char timePoint[MAX_TIMEPOINT_LEN];
@@ -16,9 +16,9 @@ typedef struct Node {
 typedef struct HashTable {
     char timePoint[MAX_TIMEPOINT_LEN];
     int count;
+    struct Node* order;  // Add this line
     struct HashTable* next;
 } HashTable;
-
 HashTable* hashTable[HASH_SIZE];
 
 unsigned long hash(char *str) {
@@ -29,7 +29,7 @@ unsigned long hash(char *str) {
     return hash % HASH_SIZE;
 }
 
-void insertHashTable(char* timePoint) {
+void insertHashTable(char* timePoint, Node* order) {
     unsigned long index = hash(timePoint);
     HashTable* current = hashTable[index];
     while(current != NULL) {
@@ -43,6 +43,7 @@ void insertHashTable(char* timePoint) {
     strcpy(newEntry->timePoint, timePoint);
     newEntry->count = 1;
     newEntry->next = hashTable[index];
+    newEntry->order = order;  // Assign the order parameter to the order field
     hashTable[index] = newEntry;
 }
 
@@ -67,14 +68,14 @@ Node* addOrder(Node* tail, char* account, char* timePoint) {
     if (tail != NULL) {
         tail->next = newOrder;
     }
-    insertHashTable(timePoint);
+    insertHashTable(timePoint, newOrder);  // Pass newOrder as the second argument
     return newOrder;
 }
 
 int main() {
     Node* log = NULL;
     Node* tail = NULL;
-    int order = 0;
+
 
     char line[256];
     while(fgets(line, sizeof(line), stdin) != NULL) {
@@ -133,20 +134,20 @@ int main() {
             token = strtok(NULL, " ");
             strcpy(toTime, token);
 
-            Node* current = log;
-            while(current != NULL){
-                if(strcmp(current->timePoint,fromTime) >= 0 && strcmp(current->timePoint, toTime) <= 0){
-                    cnt++;
+            for (unsigned long i = 0; i < HASH_SIZE; i++) {
+                HashTable* current = hashTable[i];
+                while(current != NULL){
+                    if(strcmp(current->timePoint,fromTime) >= 0 && strcmp(current->timePoint, toTime) <= 0){
+                        cnt += current->count;
+                    }
+                    current = current->next;
                 }
-                current = current->next;
             }
             
             printf("%d\n",cnt);
         }
-
         if(strcmp(cmd, "?number_orders_at_time") == 0){
             char atTime[9];
-            int cnt = 0;
 
             token = strtok(NULL, " ");
             if (token == NULL) {
@@ -155,16 +156,16 @@ int main() {
             }
             strcpy(atTime, token);
 
-            Node* current = log;
+            unsigned long index = hash(atTime);
+            HashTable* current = hashTable[index];
             while(current != NULL){
                 if(strcmp(current->timePoint,atTime) == 0){
-                    cnt++;
+                    printf("%d\n", current->count);
+                    break;
                 }
                 current = current->next;
             }
-            
-            printf("%d\n",cnt);
-        }
+            }
     }   
 
     Node* temp;
