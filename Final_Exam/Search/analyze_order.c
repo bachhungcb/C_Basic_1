@@ -11,25 +11,24 @@ typedef struct Node {
     struct Node* next;
 } Node;
 
-Node* addOrder(Node* head, char* account, char* timePoint) {
+Node* addOrder(Node* tail, char* account, char* timePoint) {
     Node* newOrder = (Node*)malloc(sizeof(Node));
     strcpy(newOrder->account, account);
     strcpy(newOrder->timePoint, timePoint);
-    newOrder->next = head;
+    newOrder->next = NULL;
+    if (tail != NULL) {
+        tail->next = newOrder;
+    }
     return newOrder;
 }
 
 int main() {
     Node* log = NULL;
+    Node* tail = NULL;
     int order = 0;
 
-    while(1) {
-        char line[256];
-        char *saveptr = NULL;
-        char *token;
-
-        fgets(line,256,stdin);
-
+    char line[256];
+    while(fgets(line, sizeof(line), stdin) != NULL) {
         if(line[strlen(line) - 1] == '\n') {
             line[strlen(line) - 1] = '\0';
         }
@@ -38,15 +37,19 @@ int main() {
             break;
         }
 
-        token = strtok_r(line, " ", &saveptr);
+        char *token = strtok(line, " ");
         char account[MAX_ACCOUNT_LEN];
         strcpy(account, token);
 
-        token = strtok_r(NULL, " ", &saveptr);
+        token = strtok(NULL, " ");
         char timePoint[MAX_TIMEPOINT_LEN];
         strcpy(timePoint, token);
 
-        log = addOrder(log, account, timePoint);
+        Node* newOrder = addOrder(tail, account, timePoint);
+        if (log == NULL) {
+            log = newOrder;
+        }
+        tail = newOrder;
         order++;
     }
 
