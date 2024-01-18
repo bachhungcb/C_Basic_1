@@ -4,21 +4,70 @@
 
 #define MAX_TIMEPOINT_LEN 9
 #define MAX_ACCOUNT_LEN 16
+#define HASH_SIZE 100000
 
 typedef struct Node {
     char account[MAX_ACCOUNT_LEN];
     char timePoint[MAX_TIMEPOINT_LEN];
     struct Node* next;
+    struct Node* prev;
 } Node;
+
+typedef struct HashTable {
+    char timePoint[MAX_TIMEPOINT_LEN];
+    int count;
+    struct HashTable* next;
+} HashTable;
+
+HashTable* hashTable[HASH_SIZE];
+
+unsigned long hash(char *str) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    return hash % HASH_SIZE;
+}
+
+void insertHashTable(char* timePoint) {
+    unsigned long index = hash(timePoint);
+    HashTable* current = hashTable[index];
+    while(current != NULL) {
+        if(strcmp(current->timePoint, timePoint) == 0) {
+            current->count++;
+            return;
+        }
+        current = current->next;
+    }
+    HashTable* newEntry = (HashTable*)malloc(sizeof(HashTable));
+    strcpy(newEntry->timePoint, timePoint);
+    newEntry->count = 1;
+    newEntry->next = hashTable[index];
+    hashTable[index] = newEntry;
+}
+
+int getHashTable(char* timePoint) {
+    unsigned long index = hash(timePoint);
+    HashTable* current = hashTable[index];
+    while(current != NULL) {
+        if(strcmp(current->timePoint, timePoint) == 0) {
+            return current->count;
+        }
+        current = current->next;
+    }
+    return 0;
+}
 
 Node* addOrder(Node* tail, char* account, char* timePoint) {
     Node* newOrder = (Node*)malloc(sizeof(Node));
     strcpy(newOrder->account, account);
     strcpy(newOrder->timePoint, timePoint);
     newOrder->next = NULL;
+    newOrder->prev = tail;
     if (tail != NULL) {
         tail->next = newOrder;
     }
+    insertHashTable(timePoint);
     return newOrder;
 }
 
