@@ -1,150 +1,165 @@
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#define MAX 100
-//-----------Sử dụng double linklist_Bien_cuc_bo-----//
-// Thuật toán:
-// Đưa trạng thái xuất phát vào hàng đợi
-// Lặp :
-//   Lấy 1 trạng thái ra khỏi hàng đợi,sinh ravà đưa các trạng thái lân cận vào hàng đợi 
-//    nếu các trạng thái này chưa được sinh ra
-// Thuật toán kết thúc khi đến trạng thái đích
-typedef struct Node
+typedef struct  Node
 {
-    int row;
-    int col;
-    int step;//Số bước di chuyển từ trạng thái xuất phát đến trạng thái hiện tại
-    struct Node* next;//con trỏ trỏ đến phần tử tiếp theo của hàng đợi
-    struct Node* prev;//con trỏ trỏ đến trạng thái sinh ra trạng thái hiện tại
+    int data;
+    struct Node* leftMostChild;
+    struct Node* rightSibling;
 }Node;
 
-Node *front = NULL;
-Node *rear = NULL;
-Node *listNode[MAX * MAX];//Mảng lưu các phần tử được cấp phát động để giải phóng bộ nhớ
-// Mối listNode[n] = Địa chỉ
-int szList = 0;//So phan tu cua listNode
-int A[MAX][MAX];
-int n,m;//Biến cục bộ
-int r0,c0;//Biến cục bộ
-int r1,c1;
-int visited[MAX][MAX];//visited = 0 nếu chưa đi qua, = 1 nếu đi qua rồi
-
-const int dr[4]={1,-1,0,0};//
-const int dc[4]={0,0,1,-1};
-Node* finalNode;
-//---- Giai phóng bộ nhớ---------//
-void finalize(){
-    for(int i = 0; i < szList; i++){
-        free(listNode[i]);
-        listNode[i] = NULL;
-    }
-    szList = 0;
-}
-void addList(Node* node){// them phan tu vao listNode de thuc hien giai phong bo nho
-    listNode[szList] = node;
-    szList++;
-}
-//-----------------------------------
-
-//----------Đọc dữ liệu vào---------
-void input()
+Node* GetNewNode(int data)
 {
-    scanf("%d %d %d %d",&n,&m,&r0,&c0);
-    for(int i = 1; i <= n; i++)
-    for(int j = 1; j <= m; j++)
-    scanf("%d",&A[i][j]);
-}
-//------------------------------------
-Node* makeNode(int row, int col, int step, Node* prev){
-        Node* node = (Node*)malloc(sizeof(Node));
-        node->row = row; 
-        node->col = col; 
-        node->next = NULL;
-        node->prev = prev; 
-        node->step = step;
-        return node;
-}
-int IsEmpty()
-{
-    if(front == NULL && rear == NULL)
-    return 1;
-    else 
-    return 0;
-}
-void Enqueue(Node* node)
-{
-    if(IsEmpty())
+    Node* tmp = (Node*)malloc(sizeof(Node));
+    if(tmp!=NULL)
     {
-        front = rear = node;
-        return;
+    tmp->data = data;
+    tmp->leftMostChild = NULL;
+    tmp->rightSibling = NULL;
     }
-    else{
-    rear->next = node;
-    rear = node;
+    return tmp;
 }
-}
-void Dequeue()//vừa xoá vừa lấy
+Node* addSibling(Node* root,int data)
 {
-    Node* tmp = front;
-    if(IsEmpty())
+    if(root == NULL)
     {
-        return;
+        root = GetNewNode(data);
+        return root;
     }
-    if(front == rear)
-    {
-        front = rear = NULL;
-        free(tmp);
-    }
-    else{
-    front = tmp->next;
-    free(tmp);
-    }
+    root->rightSibling = addSibling(root->rightSibling,data);
+    return root;
 }
-Node* Topqueue()
+// u la con cua v
+Node* Find(Node* root, int data)
 {
-    return front;
+    if(root == NULL)
+        return NULL;
+    if(root->data == data) 
+        return root;
+    //Tim kiem cac con cua cay tong quat
+    Node* tmp = root->leftMostChild;
+    while (tmp!=NULL)
+    {
+        Node* res = Find(tmp,data);
+        if(res != NULL) // nếu có tìm thấy ở cây con thì trả về giá trị đó
+            return res;
+        tmp = tmp->rightSibling;
+    }
+    return NULL; // nếu không tìm thấy ở một cây con nào, trả về NULL
 }
-
+// u là con cua v
+void addChild(Node* root, int u,int v)
+{
+    if(root == NULL)
+    {
+        return ;
+    }
+    Node* tmp = Find(root,v);
+    if(tmp!=NULL)
+    {
+    tmp->leftMostChild = addSibling(tmp->leftMostChild,u);
+    }
+}
+void InOrder(Node* root);
+void PreOrder(Node* root);
+void PostOrder(Node* root);
 int main()
 {
-        input();
-       for(int i = 1; i <= n; i++)
-        for(int j = 1; j <= m; j++)
-        visited[i][j] = 0;
-        Node* start = makeNode(r0,c0,0,NULL);
-        addList(start);
-        Enqueue(start);
-        visited[r0][c0] = 1;
-        //Duyet chieu rong
-        while(IsEmpty() == 0)
+    Node* root = NULL;
+    char s[50];
+    while (1)
+    {
+        
+        scanf("%s", s);
+        getchar();
+        if(strcmp(s,"*") == 0) break;
+        else if(strcmp(s,"MakeRoot") == 0)
         {
-            Node* tmp = Topqueue();
-            for(int k = 0; k < 4; k++)
-            {
-                int next_c = tmp->col + dc[k];
-                int next_r = tmp->row + dr[k];
-                if(next_r >= 1 && next_r <= n && next_c >= 1 && next_c <= m && A[next_r][next_c] == 0 && visited[next_r][next_c] == 0)
-                {
-                    visited[next_r][next_c] = 1;
-                    Node* newNode = makeNode(next_r,next_c,tmp->step + 1, tmp);
-                    addList(newNode);
-                    Enqueue(newNode);
-                    if(next_r == 1 || next_r == n || next_c == 1 || next_c == m)
-                    {
-                        finalNode = newNode;
-                        break;
-                    }
-                }
-            }
-            Dequeue();
-            if(finalNode != NULL) break;
+            int u;
+            scanf("%d", &u);
+            root = GetNewNode(u);
         }
-
-        if (finalNode != NULL) {
-            printf("%d", finalNode->step + 1);
-        } else {
-            printf("No path to the edge of the grid was found.\n");
+        else if(strcmp(s,"Insert") == 0)
+        {
+            int u,v;
+            scanf("%d%d", &u, &v);
+            addChild(root,u,v);
         }
-        finalize();
+        else if(strcmp(s,"InOrder") == 0)
+        {
+            
+            InOrder(root);
+            printf("\n");
+           
+        }
+        else if(strcmp(s,"PreOrder") == 0)
+        {
+            PreOrder(root);
+             printf("\n");
+        }
+        else if(strcmp(s,"PostOrder") == 0)
+        {
+            PostOrder(root);
+             printf("\n");
+        }
+    }
+}
+//DFS(u):
+//preorder <- u
+//for v in children(u): // tham tat ca cac con cua u
+//DFS(v)
+//Ta sẽ bắt đầu từ đỉnh gốc, mỗi đỉnh được đánh dấu đã đi qua khi được cho vào stack lần đầu(stack ở
+// đây nghĩa là hàm DFS)
+void PreOrder(Node* root)
+{
+    
+    if(root == NULL) return;
+    printf("%d ", root->data);
+    Node* tmp = root->leftMostChild;
+    while (tmp!=NULL){
+    PreOrder(tmp);
+    tmp = tmp->rightSibling;
+    }
+    //Ham While tren chi la cach viet khac cua vong for khi muon tham tat ca cac con cua root
+       
+}
+//  DFS(u):
+  //for v in children(u):
+  //DFS(v)
+  //postorder <- u
+  //Một đỉnh được coi là đã thăm ngay khi tất cả các con của nó được thăm(Các đỉnh lá được đánh dấu
+  // đã thăm ngay khi được đưa vào stack)
+void PostOrder(Node* root)
+{
+    if(root == NULL) return;
+  //Tham tất cả các con 
+  Node* tmp = root->leftMostChild;
+  while(tmp!=NULL){ 
+    PostOrder(tmp);
+    tmp = tmp->rightSibling;
+  }
+  printf("%d ", root->data);
+}
+//Một đỉnh đƯợc coi là đã thăm sau khi tất cả các đỉnh thuộc cây con trái được thăm
+//Trước bất kì đỉnh nào của cây con phải được thăm
+void InOrder(Node* root)
+{
+    if(root == NULL) return;
+    Node* tmp = root->leftMostChild;
+    if(tmp == NULL)//Neu khong co con 
+    {
+        printf("%d ", root->data);
+    }
+    else //Neu co con
+    {
+        InOrder(tmp);//Thăm con trưởng
+        printf("%d ",root->data);//Tham nut goc
+        tmp = tmp->rightSibling;//Sau khi thăm nut goc  song cập nhật thành con thứ
+    while (tmp!=NULL)
+    {
+        InOrder(tmp);
+        tmp = tmp->rightSibling;
+    }
+    }
+    
 }
