@@ -4,9 +4,11 @@
 
 #define INITIAL_SIZE 100000
 #define LOAD_FACTOR 0.75
+#define PRIME_1 151
+#define PRIME_2 163
 
 typedef struct {
-    int key;
+    long long int key;
     int exists;
 } HashEntry;
 
@@ -30,20 +32,22 @@ HashTable* createHashTable(int size) {
     return hashTable;
 }
 
-int hash(int key, int size) {
-    return key % size;
+int hash(long long int key, int size, int attempt) {
+    int hash_a = key % size;
+    int hash_b = PRIME_2 - (key % PRIME_2);
+    return (hash_a + (attempt * (hash_b + 1))) % size;
 }
 
+int findKey(HashTable* hashTable, long long int key) {
+    int index = hash(key, hashTable->size, 0);
+    int attempt = 0;
 
-
-int findKey(HashTable* hashTable, int key) {
-    int index = hash(key, hashTable->size);
-
-    while (hashTable->entries[index].key != -1) {
-        if (hashTable->entries[index].key == key && hashTable->entries[index].exists) {
+    while (hashTable->entries[index].exists) {
+        if (hashTable->entries[index].key == key) {
             return 1;
         }
-        index = (index + 1) % hashTable->size;
+        attempt++;
+        index = hash(key, hashTable->size, attempt);
     }
 
     return 0;
@@ -51,23 +55,36 @@ int findKey(HashTable* hashTable, int key) {
 
 void resizeHashTable(HashTable* hashTable);
 
-void insertKeyDirectly(HashTable* hashTable, int key) {
-    int index = hash(key, hashTable->size);
+void insertKeyDirectly(HashTable* hashTable, long long int key) {
+    int index = hash(key, hashTable->size, 0);
+    int attempt = 0;
 
-    while (hashTable->entries[index].key != -1) {
-        index = (index + 1) % hashTable->size;
+    while (hashTable->entries[index].exists) {
+        attempt++;
+        index = hash(key, hashTable->size, attempt);
     }
 
     hashTable->entries[index].key = key;
     hashTable->entries[index].exists = 1;
     hashTable->count++;
+
+    // Check the load factor
+    float loadFactor = (float)hashTable->count / hashTable->size;
+    if (loadFactor > LOAD_FACTOR) {
+        // Resize the hash table if the load factor is too high
+        resizeHashTable(hashTable);
+    }
 }
 
 void resizeHashTable(HashTable* hashTable) {
     int oldSize = hashTable->size;
     HashEntry* oldEntries = hashTable->entries;
 
-    hashTable->size *= 2;
+    // Limit the size of the hash table
+    if (hashTable->size < 300000) {
+        hashTable->size *= 2;
+    }
+
     hashTable->entries = malloc(hashTable->size * sizeof(HashEntry));
     hashTable->count = 0;
 
@@ -89,8 +106,8 @@ int main() {
     HashTable* hashTable = createHashTable(INITIAL_SIZE);
 
     // Read the keys from the first block
-    int key;
-    while (scanf("%d", &key) == 1) {
+    long long int key;
+    while (scanf("%lld", &key) == 1) {
         if (key == -1) {
             break;
         }
@@ -105,7 +122,7 @@ int main() {
             break;
         }
 
-        scanf("%d", &key);
+        scanf("%lld", &key);
 
         if (strcmp(cmd, "find") == 0) {
             printf("%d\n", findKey(hashTable, key));

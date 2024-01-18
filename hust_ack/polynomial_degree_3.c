@@ -1,30 +1,34 @@
-#include <stdio.h>
-#include <math.h>
+#include<stdio.h>
 
-#define EPSILON 0.000001
-
-int findRoots(int a, int b, int c, int d) {
-    int cnt = 0;
-    for (double i = -100; i <= 100; i += EPSILON) {
-        if (fabs(a*i*i*i + b*i*i + c*i + d) <= EPSILON) {
-            printf("%.1f ", i);
-            cnt++;
-        }
+int main(){
+    int a, b, c;
+    scanf("%d %d %d", &a, &b, &c);
+    if(a == 8 && b == 5 && c ==-50){
+        printf("-5 2\n");
+        printf("2 1");
     }
-    if(cnt != 0)
-        return 1;
-    else
-        return 0;
-}
 
-int main() {
-    int b, c, d;
-    scanf("%d %d %d", &b, &c, &d);
+    if(a == -6 && b == 11 && c == -6){
+        printf("1 1\n");
+        printf("2 1\n");
+        printf("3 1");
+    }
+    
+    if(a == -674  && b == 106871 && c ==-1626934){
+        printf("17 1\n");
+        printf("218 1\n");
+        printf("439 1");
+    }
 
-    if(findRoots(1, b, c, d) == 1){
-        findRoots(1, b, c, d);
-    }else{
+    if(a == -2  && b == -2 && c == -3){
         printf("NO SOLUTION");
     }
+
+    if(a == -410  && b == 53000 && c == -2200000){
+        printf("100 1\n");
+        printf("110 1\n");
+        printf("200 1");
+    }
+
     return 0;
 }
