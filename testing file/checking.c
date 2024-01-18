@@ -48,7 +48,7 @@ szList++;
 //----------Đọc dữ liệu vào---------
 void input()
 {
-    scanf("%d%d%d%d",&n,&m,&r0,&c0);
+    scanf("%d %d %d %d",&n,&m,&r0,&c0);
     for(int i = 1; i <= n; i++)
     for(int j = 1; j <= m; j++)
     scanf("%d",&A[i][j]);
@@ -115,19 +115,19 @@ int main()
         Enqueue(start);
         visited[r0][c0] = 1;
         //Duyet chieu rong
-        while(IsEmpty() != 0)
-        {
+        while(IsEmpty() == 0)
+            {
                 Node* tmp = Topqueue();
                 if(tmp->row < 1 || tmp->row > n || tmp->col < 1 || tmp->col > m)
                 {
-                        finalNode = tmp;
-                        break;
+                    finalNode = tmp;
+                    break;
                 }
                 for(int k = 0; k < 4; k++)
                 {
-                        int next_c = tmp->col + dc[k];
-                        int next_r = tmp->row + dr[k];
-                    if(A[next_r][next_c] == 0 && visited[next_r][next_c] == 0)
+                    int next_c = tmp->col + dc[k];
+                    int next_r = tmp->row + dr[k];
+                    if(next_r >= 1 && next_r <= n && next_c >= 1 && next_c <= m && A[next_r][next_c] == 0 && visited[next_r][next_c] == 0)
                     {
                         visited[next_r][next_c] = 1;
                         Node* newNode = makeNode(next_r,next_c,tmp->step + 1, tmp);
@@ -136,8 +136,13 @@ int main()
                     }
                 }
                 Dequeue();
+            }
+
+        if (finalNode != NULL) {
+            printf("%d", finalNode->step);
+        } else {
+            printf("No path to the edge of the grid was found.\n");
         }
-        printf("%d", finalNode->step);
         finalize();
         
     
