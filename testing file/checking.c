@@ -39,6 +39,7 @@ void finalize(){
         free(listNode[i]);
         listNode[i] = NULL;
     }
+    szList = 0;
 }
 void addList(Node* node){// them phan tu vao listNode de thuc hien giai phong bo nho
     listNode[szList] = node;
@@ -117,34 +118,33 @@ int main()
         visited[r0][c0] = 1;
         //Duyet chieu rong
         while(IsEmpty() == 0)
+        {
+            Node* tmp = Topqueue();
+            for(int k = 0; k < 4; k++)
             {
-                Node* tmp = Topqueue();
-                if(tmp->row == 1 || tmp->row == n || tmp->col == 1 || tmp->col == m)
+                int next_c = tmp->col + dc[k];
+                int next_r = tmp->row + dr[k];
+                if(next_r >= 1 && next_r <= n && next_c >= 1 && next_c <= m && A[next_r][next_c] == 0 && visited[next_r][next_c] == 0)
                 {
-                    finalNode = tmp;
-                    break;
-                }
-                for(int k = 0; k < 4; k++)
-                {
-                    int next_c = tmp->col + dc[k];
-                    int next_r = tmp->row + dr[k];
-                    if(next_r >= 1 && next_r <= n && next_c >= 1 && next_c <= m && A[next_r][next_c] == 0 && visited[next_r][next_c] == 0)
+                    visited[next_r][next_c] = 1;
+                    Node* newNode = makeNode(next_r,next_c,tmp->step + 1, tmp);
+                    addList(newNode);
+                    Enqueue(newNode);
+                    if(next_r == 1 || next_r == n || next_c == 1 || next_c == m)
                     {
-                        visited[next_r][next_c] = 1;
-                        Node* newNode = makeNode(next_r,next_c,tmp->step + 1, tmp);
-                        addList(newNode);
-                        Enqueue(newNode);
+                        finalNode = newNode;
+                        break;
                     }
                 }
-                Dequeue();
             }
+            Dequeue();
+            if(finalNode != NULL) break;
+        }
 
         if (finalNode != NULL) {
-            printf("%d", finalNode->step);
+            printf("%d", finalNode->step + 1);
         } else {
             printf("No path to the edge of the grid was found.\n");
         }
         finalize();
-        
-    
 }
