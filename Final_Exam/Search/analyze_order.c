@@ -41,48 +41,51 @@ Output
 #include <stdlib.h>
 #include <string.h>
 
-int MIN = 10;
 #define MAX_TIMEPOINT_LEN 9
 #define MAX_ACCOUNT_LEN 16
 
 typedef struct Node {
     char account[MAX_ACCOUNT_LEN];
     char timePoint[MAX_TIMEPOINT_LEN];
-}Node;
+    struct Node* next;
+} Node;
 
+Node* addOrder(Node* head, char* account, char* timePoint) {
+    Node* newOrder = (Node*)malloc(sizeof(Node));
+    strcpy(newOrder->account, account);
+    strcpy(newOrder->timePoint, timePoint);
+    newOrder->next = head;
+    return newOrder;
+}
 
-int main(){
-    
-    Node *log = (Node*)malloc(MIN * sizeof(Node));
+int main() {
+    Node* log = NULL;
     int order = 0;
 
-    while(1){
+    while(1) {
         char line[256];
         char *saveptr = NULL;
         char *token;
 
-
         fgets(line,256,stdin);
-
-        if(order >= MIN){
-            MIN*=2;
-            log = realloc(log, MIN * sizeof(Node));
-        }
 
         if(line[strlen(line) - 1] == '\n') {
             line[strlen(line) - 1] = '\0';
         }
-        
+
         if(strcmp(line, "#") == 0){
             break;
         }
 
         token = strtok_r(line, " ", &saveptr);
-        strcpy(log[order].account, token);
+        char account[MAX_ACCOUNT_LEN];
+        strcpy(account, token);
 
         token = strtok_r(NULL, " ", &saveptr);
-        strcpy(log[order].timePoint, token);
+        char timePoint[MAX_TIMEPOINT_LEN];
+        strcpy(timePoint, token);
 
+        log = addOrder(log, account, timePoint);
         order++;
     }
 
@@ -131,6 +134,10 @@ int main(){
             int cnt = 0;
 
             token = strtok(NULL, " ");
+            if (token == NULL) {
+                fprintf(stderr, "Error: expected a time after '?number_orders_at_time'\n");
+                continue;
+            }
             strcpy(atTime, token);
 
             for(int i = 0; i < order; i++){
@@ -143,6 +150,12 @@ int main(){
         }
         }   
 
+    Node* temp;
+    while (log != NULL) {
+        temp = log;
+        log = log->next;
+        free(temp);
+    }
 
     return 0;
 }
